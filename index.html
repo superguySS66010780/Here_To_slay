@@ -1,61 +1,48 @@
-<!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Here to Slay - Card Browser</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Here to Slay 🔥</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet">
 </head>
-<body>
-  <header class="navbar">
-    <div class="nav-left">Here to Slay</div>
-    <div class="nav-right">
-      <button class="menu-toggle" aria-label="toggle menu">☰</button>
-      <div class="dark-mode-icon" id="darkIcon">🌙</div>
-    </div>
-  </header>
-  <nav class="mobile-nav" id="mobileNav"></nav>
+<body class="light">
+  <div class="container">
+    <h1 class="title">Here to Slay 🔥</h1>
+    <button class="toggle-btn" onclick="toggleTheme()" id="themeIcon">🌙</button>
 
-  <h1 style="text-align: center; font-size: 2rem;">Here to Slay 🔥</h1>
+    <input type="text" id="search" placeholder="🔍 ค้นหาชื่อการ์ด..." oninput="searchCard()">
 
-  <label for="categorySelect">เลือกหมวดหมู่:</label>
-  <select id="categorySelect">
-    <option value="">-- เลือกหมวด --</option>
-  </select>
+    <select id="category" onchange="onCategoryChange()">
+      <option value="">-- เลือกหมวดหมู่ --</option>
+      <option value="Party Leaders & Heroes">Party Leaders & Heroes</option>
+      <option value="Monsters">Monsters</option>
+      <option value="Items">Items</option>
+      <option value="Cursed Items">Cursed Items</option>
+      <option value="Magic">Magic</option>
+      <option value="Modifiers">Modifiers</option>
+      <option value="Challenges">Challenges</option>
+      <option value="Rule Card">Rule Card</option>
+    </select>
 
-  <label for="subCategorySelect">เลือกกลุ่มย่อย:</label>
-  <select id="subCategorySelect" disabled>
-    <option value="">-- เลือกกลุ่มย่อย --</option>
-  </select>
+    <select id="subgroup" style="display:none" onchange="render()">
+      <option value="">-- เลือกกลุ่มย่อย --</option>
+      <option value="Fighter">Fighter</option>
+      <option value="Wizard">Wizard</option>
+      <option value="Thief">Thief</option>
+      <option value="Guardian">Guardian</option>
+      <option value="Bard">Bard</option>
+      <option value="Ranger">Ranger</option>
+      <option value="Warrior">Warrior</option>
+      <option value="Druid">Druid</option>
+      <option value="Necromancer">Necromancer</option>
+      <option value="Berserker">Berserker</option>
+    </select>
 
-  <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่อ...">
+    <div id="result"></div>
+  </div>
 
-  <div id="cardContainer"></div>
-
+  <script src="data.js"></script>
   <script src="script.js"></script>
-  <script>
-    const toggleIcon = document.getElementById('darkIcon');
-    const mobileNav = document.getElementById('mobileNav');
-    const menuBtn = document.querySelector('.menu-toggle');
-
-    // เมนูเลื่อน mobile
-    menuBtn.addEventListener('click', () => {
-      mobileNav.classList.toggle('open');
-    });
-
-    // โหลดสถานะ dark mode จาก localStorage
-    if (localStorage.getItem('darkMode') === 'true') {
-      document.body.classList.add('dark');
-      toggleIcon.textContent = '☀️';
-    }
-
-    // toggle dark mode
-    toggleIcon.addEventListener('click', () => {
-      document.body.classList.toggle('dark');
-      const isDark = document.body.classList.contains('dark');
-      toggleIcon.textContent = isDark ? '☀️' : '🌙';
-      localStorage.setItem('darkMode', isDark);
-    });
-  </script>
 </body>
 </html>
