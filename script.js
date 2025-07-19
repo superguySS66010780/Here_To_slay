@@ -909,11 +909,13 @@ const data = {
     image: ""
   },
   ],
-  "Magic": {
-    name: "asf",
+  "Magic": [
+    {
+    name: "hvhv.hv",
     ability: "awsfwae",
     image: ""
   },
+  ],
   "Modifiers": [
     {
     name: "thsrt",
@@ -924,8 +926,7 @@ const data = {
   "Challenges": [
     {
     name: "svsd",
-    Requirement: "sdvsd",
-    ability: "",
+    ability: "iygiygiug",
     Requirement: "1 Berserker and 1 Hero",
     image: ""
   },
@@ -935,102 +936,87 @@ const data = {
   ]
 };
 
-const categorySelect = document.getElementById("categorySelect");
-const subCategorySelect = document.getElementById("subCategorySelect");
-const searchInput = document.getElementById("searchInput");
-const cardContainer = document.getElementById("cardContainer");
-
-// เติมหมวดหมู่หลัก
-for (let category in data) {
-  const option = document.createElement("option");
-  option.value = category;
-  option.textContent = category;
-  categorySelect.appendChild(option);
+// script.js
+function toggleTheme() {
+  const body = document.body;
+  const icon = document.getElementById('themeIcon');
+  body.classList.toggle("dark");
+  body.classList.toggle("light");
+  icon.textContent = body.classList.contains('dark') ? '☀️' : '🌙';
 }
 
-categorySelect.addEventListener("change", () => {
-  searchInput.value = "";
-  const selectedCategory = categorySelect.value;
-  subCategorySelect.innerHTML = '<option value="">-- เลือกกลุ่มย่อย --</option>';
+function onCategoryChange() {
+  document.getElementById('search').value = '';
+  const category = document.getElementById('category').value;
+  const subgroup = document.getElementById('subgroup');
+  subgroup.style.display = category === "Party Leaders & Heroes" ? 'block' : 'none';
+  render();
+}
 
-  if (selectedCategory === "Party Leaders & Heroes") {
-    const subGroups = data[selectedCategory];
-    for (let sub in subGroups) {
-      const option = document.createElement("option");
-      option.value = sub;
-      option.textContent = sub;
-      subCategorySelect.appendChild(option);
-    }
-    subCategorySelect.disabled = false;
-  } else {
-    subCategorySelect.disabled = true;
+function render() {
+  const cat = document.getElementById('category').value;
+  const sub = document.getElementById('subgroup').value;
+  const container = document.getElementById('result');
+  container.innerHTML = '';
+
+  let items = [];
+  if (cat === 'Party Leaders & Heroes' && sub && data[cat]?.[sub]) {
+    items = data[cat][sub];
+    items.forEach(card => {
+      container.innerHTML += renderCard(card, ['name', 'ability', 'roll', 'image', 'type']);
+    });
+  } else if (data[cat]) {
+    const list = Array.isArray(data[cat]) ? data[cat] : Object.values(data[cat]).flat();
+    list.forEach(card => {
+      let fields = ['name', 'ability', 'image'];
+      if (cat === 'Monsters') fields = ['name', 'Requirement', 'ability', 'roll_success', 'roll_unsuccess', 'image'];
+      //if (cat === 'Items') fields = ['name', 'ability', 'image'];
+      //if (cat === 'Cursed Items') fields = ['name', 'ability', 'image'];
+      //if (cat === 'Magic') fields = ['name', 'ability', 'image'];
+      //if (cat === 'Modifiers') fields = ['name', 'ability', 'image'];
+      if (cat === 'Challenges') fields = ['name', 'Requirement', 'ability', 'image'];
+      container.innerHTML += renderCard(card, fields);
+    });
   }
+}
 
-  displayCards();
-});
+function renderCard(card, fields) {
+  const imageTag = card.image ? `<img src='${card.image}'>` : '';
+  const info = fields.filter(f => f !== 'image').map(f => card[f] ? `<p><strong>${f}:</strong> ${card[f]}</p>` : '').join('');
+  return `<div class="card">${imageTag}<div class="info">${info}</div></div>`;
+}
 
-subCategorySelect.addEventListener("change", () => {
-  searchInput.value = "";
-  subCategorySelect.blur();
-  displayCards();
-});
+function searchCard() {
+  const keyword = document.getElementById('search').value.trim().toLowerCase();
+  if (!keyword) return render();
+  document.getElementById('category').value = '';
+  document.getElementById('subgroup').style.display = 'none';
+  const container = document.getElementById('result');
+  container.innerHTML = '';
 
-searchInput.addEventListener("input", displayCards);
-
-function displayCards() {
-  const category = categorySelect.value;
-  const sub = subCategorySelect.value;
-  const search = searchInput.value.toLowerCase();
-  cardContainer.innerHTML = "";
-
-  let matchedCards = [];
-
-  if (search) {
-    // เคลียร์หมวดหมู่เมื่อมีการค้นหา
-    categorySelect.value = "";
-    subCategorySelect.innerHTML = '<option value="">-- เลือกกลุ่มย่อย --</option>';
-    subCategorySelect.disabled = true;
-
-    for (let cat in data) {
-      const subcats = data[cat];
-      if (Array.isArray(subcats)) {
-        matchedCards.push(
-          ...subcats.filter(card => card.name.toLowerCase().includes(search))
-        );
-      } else {
-        for (let sub in subcats) {
-          matchedCards.push(
-            ...subcats[sub].filter(card => card.name.toLowerCase().includes(search))
-          );
+  Object.keys(data).forEach(cat => {
+    if (cat === 'Party Leaders & Heroes') {
+      Object.values(data[cat]).forEach(group => {
+        group.forEach(card => {
+          if (card.name.toLowerCase().includes(keyword)) {
+            container.innerHTML += renderCard(card, ['name', 'ability', 'roll', 'image', 'type']);
+          }
+        });
+      });
+    } else {
+      const list = Array.isArray(data[cat]) ? data[cat] : Object.values(data[cat]).flat();
+      list.forEach(card => {
+        if (card.name.toLowerCase().includes(keyword)) {
+          let fields = ['name', 'ability', 'image'];
+          if (cat === 'Monsters') fields = ['name', 'Requirement', 'ability', 'roll_success', 'roll_unsuccess', 'image'];
+          //if (cat === 'Items') fields = ['name', 'ability', 'image'];
+          //if (cat === 'Cursed Items') fields = ['name', 'ability', 'image'];
+          //if (cat === 'Magic') fields = ['name', 'ability', 'image'];
+          //if (cat === 'Modifiers') fields = ['name', 'ability', 'image'];
+          if (cat === 'Challenges') fields = ['name', 'Requirement', 'ability', 'image'];
+          container.innerHTML += renderCard(card, fields);
         }
-      }
+      });
     }
-  } else if (category === "Party Leaders & Heroes" && sub && data[category][sub]) {
-    matchedCards = data[category][sub];
-  }
-
-  matchedCards.forEach(card => {
-    const div = document.createElement("div");
-    div.className = "card";
-    let html = `<img src="${card.image || 'https://via.placeholder.com/100'}" alt="${card.name}">
-      <div>
-        <strong>${card.name}</strong><br>`;
-
-    if (card.type) {
-      html += `ความสามารถ: ${card.ability}<br>
-        ทอย: ${card.roll}<br>
-        ประเภท: ${card.type || '-'}<br>`;
-    } else if (card.Requirement) {
-      html += `เงื่อนไข: ${card.Requirement}<br>
-        ความสามารถ: ${card.ability}<br>
-        ทอยสำเร็จ: ${card.roll_success}<br>
-        ทอยล้มเหลว: ${card.roll_unsuccess}<br>`;
-    } else if (card.ability) {
-      html += `ความสามารถ: ${card.ability}<br>`;
-    }
-
-    html += `</div>`;
-    div.innerHTML = html;
-    cardContainer.appendChild(div);
   });
 }
