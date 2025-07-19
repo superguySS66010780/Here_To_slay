@@ -953,7 +953,6 @@ categorySelect.addEventListener("change", () => {
   const selectedCategory = categorySelect.value;
   subCategorySelect.innerHTML = '<option value="">-- เลือกกลุ่มย่อย --</option>';
 
-  // แสดงเฉพาะกลุ่มย่อยถ้าเป็น Party Leaders & Heroes
   if (selectedCategory === "Party Leaders & Heroes") {
     const subGroups = data[selectedCategory];
     for (let sub in subGroups) {
@@ -975,6 +974,7 @@ subCategorySelect.addEventListener("change", () => {
   subCategorySelect.blur();
   displayCards();
 });
+
 searchInput.addEventListener("input", displayCards);
 
 function displayCards() {
@@ -986,13 +986,23 @@ function displayCards() {
   let matchedCards = [];
 
   if (search) {
-    // ค้นหาชื่อทั้งหมดในทุกหมวดหมู่
+    // เคลียร์หมวดหมู่เมื่อมีการค้นหา
+    categorySelect.value = "";
+    subCategorySelect.innerHTML = '<option value="">-- เลือกกลุ่มย่อย --</option>';
+    subCategorySelect.disabled = true;
+
     for (let cat in data) {
       const subcats = data[cat];
-      for (let sub in subcats) {
+      if (Array.isArray(subcats)) {
         matchedCards.push(
-          ...subcats[sub].filter(card => card.name.toLowerCase().includes(search))
+          ...subcats.filter(card => card.name.toLowerCase().includes(search))
         );
+      } else {
+        for (let sub in subcats) {
+          matchedCards.push(
+            ...subcats[sub].filter(card => card.name.toLowerCase().includes(search))
+          );
+        }
       }
     }
   } else if (category === "Party Leaders & Heroes" && sub && data[category][sub]) {
@@ -1006,20 +1016,17 @@ function displayCards() {
       <div>
         <strong>${card.name}</strong><br>`;
 
-    if (category === "Party Leaders & Heroes") {
+    if (card.type) {
       html += `ความสามารถ: ${card.ability}<br>
         ทอย: ${card.roll}<br>
         ประเภท: ${card.type || '-'}<br>`;
-    } else if (category === "Monsters") {
+    } else if (card.Requirement) {
       html += `เงื่อนไข: ${card.Requirement}<br>
         ความสามารถ: ${card.ability}<br>
         ทอยสำเร็จ: ${card.roll_success}<br>
         ทอยล้มเหลว: ${card.roll_unsuccess}<br>`;
-    } else if (["Items", "Cursed Items", "Magic", "Modifiers"].includes(category)) {
+    } else if (card.ability) {
       html += `ความสามารถ: ${card.ability}<br>`;
-    } else if (category === "Challenges") {
-      html += `เงื่อนไข: ${card.Requirement}<br>
-        ความสามารถ: ${card.ability}<br>`;
     }
 
     html += `</div>`;
