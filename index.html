@@ -2,11 +2,30 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Here to Slay - Card Browser</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <header class="navbar">
+  <div class="nav-left">Here to Slay</div>
+  <div class="nav-right">
+    <button class="menu-toggle" aria-label="toggle menu">☰</button>
+    <div class="dark-mode-icon" id="darkIcon">🌙</div>
+  </div>
+</header>
+<nav class="mobile-nav" id="mobileNav">
+  <label for="categorySelect">เลือกหมวดหมู่:</label>
+  <select id="categorySelect">
+    <option value="">-- เลือกหมวด --</option>
+  </select>
+
+  <label for="subCategorySelect">เลือกกลุ่มย่อย:</label>
+  <select id="subCategorySelect" disabled>
+    <option value="">-- เลือกกลุ่มย่อย --</option>
+  </select>
+
+  <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่อ...">
+</nav>
   <h1>Here to Slay 🔥</h1>
 
   <label for="categorySelect">เลือกหมวดหมู่:</label>
@@ -23,6 +42,34 @@
 
   <div id="cardContainer"></div>
 
-  <script src="script.js"></script>
+  <script src="js.js"></script>
+<script>
+  const toggleIcon = document.getElementById('darkIcon');
+  const mobileNav = document.getElementById('mobileNav');
+  const menuBtn = document.querySelector('.menu-toggle');
+
+  // เมนูเลื่อน mobile
+  menuBtn.addEventListener('click', () => {
+    mobileNav.classList.toggle('open');
+  });
+
+  // โหลดสถานะ dark mode จาก localStorage
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark');
+    toggleIcon.textContent = '☀️';
+  }
+
+  // toggle dark mode
+  toggleIcon.addEventListener('click', () => {
+    document.body.classList.toggle('dark');
+    const isDark = document.body.classList.contains('dark');
+    toggleIcon.textContent = isDark ? '☀️' : '🌙';
+    localStorage.setItem('darkMode', isDark);
+  });
+    const toggle = document.getElementById('darkToggle');
+    toggle.addEventListener('change', function() {
+      document.body.classList.toggle('dark', toggle.checked);
+    });
+  </script>
 </body>
 </html>
